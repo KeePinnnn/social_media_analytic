@@ -3,7 +3,8 @@
 ### Final Year Project
 
 Project requirements:
-..* Analyse the information in social media and provide a score ranging from [0, 1] as to how creditable the information is 
+
+* Analyse the information in social media and provide a score ranging from [0, 1] as to how creditable the information is 
 
 Propose solution
 ..* Analyse the followings:
