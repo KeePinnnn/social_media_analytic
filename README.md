@@ -41,6 +41,7 @@ Propose solution
     * Create some Algorithm to check if the image will have impact on the the given content 
 
 
+
 Suggested enahncement 
 
 * Machine Learning 
