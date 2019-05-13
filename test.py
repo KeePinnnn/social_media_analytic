@@ -1,6 +1,7 @@
-from google import api
+from controller.api_controller import GoogleController
 
 if __name__ == "__main__":
-	text = "Investing is a tool for building wealth, but it is not only for the wealthy. Anyone can get started on an investing program, and various vehicles make it easy to begin with small amounts and add to a portfolio periodically. "
+	G = GoogleController()
+	text = "Investing is a tool for building wealth ah, but it is not only for the wealthy la. Anyone can get started on an investing program, and various vehicles make it easy to begin with small amounts and add to a portfolio periodically. "
 
-	print(api.analyze_entity_sentiment(text))
+	print(G.get_score(text))
