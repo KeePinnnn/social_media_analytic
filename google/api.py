@@ -1,9 +1,3 @@
-import sys
-import os
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# print(sys.path)
-
 from config import *
 import requests
 import json
@@ -28,7 +22,7 @@ def analyze_sentiment(text:str) -> json:
 	
 	print("starting here")
 	r = requests.post(url + "?key=" + API_KEY, headers={"Content-Type": "application/json"}, data=json.dumps(data))
-	return r.text
+	return json.loads(r.text)
 
 '''
 	able to analyse the given content and return the context of the given information
@@ -50,10 +44,4 @@ def analyze_entity_sentiment(text:str) -> json:
 	print("starting here")
 	print("\n\n\n\n")
 	r = requests.post(url + "?key=" + API_KEY, headers={"Content-Type": "application/json"}, data=json.dumps(data))
-	return r.text
-
-if __name__ == "__main__":
-	text = "Leading companies rely on our container platform to build, manage and secure all their applications from traditional applications to cutting-edge microservices — and deploy them anywhere."
-
-	print(json.loads(analyze_sentiment(text)))
-	print(json.loads(analyze_entity_sentiment(text)))
+	return json.loads(r.text)
