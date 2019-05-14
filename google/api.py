@@ -6,7 +6,16 @@ from config import API_KEY, GOOGLE_URL, GOOGLE_VARIANT
 
 
 class GoogleInfor():
-	def analyze_sentiment(self, text:str) -> json:
+	def __init__(self, text:str):
+		self.text = text
+
+	def set_text(self, text:str):
+		self.text = text
+
+	def get_text(self):
+		return self.text
+
+	def analyze_sentiment(self) -> json:
 		'''
 		able to analyse the given input and allow user to understand the semantics of the given text
 		return a json of analysed result with magnitude and score
@@ -21,14 +30,14 @@ class GoogleInfor():
 				"document":
 					{
 						"type": "PLAIN_TEXT",
-						"content": text
+						"content": self.text
 					}
 				}
 		
 		r = requests.post(url + "?key=" + API_KEY, headers={"Content-Type": "application/json"}, data=json.dumps(data))
 		return json.loads(r.text)
 	
-	def analyze_entity_sentiment(self, text:str) -> json:
+	def analyze_entity_sentiment(self) -> json:
 		'''
 		able to analyse the given content and return the context of the given information
 		return a json of analyse result with salience
@@ -42,7 +51,7 @@ class GoogleInfor():
 				"document":
 					{
 						"type": "PLAIN_TEXT",
-						"content": text
+						"content": self.text
 					}
 				}
 		

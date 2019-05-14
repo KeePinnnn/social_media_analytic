@@ -1,5 +1,5 @@
 from controller.api_controller import GoogleController
-from twitter.profile_information import twitter
+from controller.twitter_controller import twit_controller
 
 if __name__ == "__main__":
 	# G = GoogleController()
@@ -7,7 +7,5 @@ if __name__ == "__main__":
 
 	# print(G.get_score(text))
 
-	t = twitter("johnculberson")
-	# t.get_tweets()
-	# t.get_followers()
-	t.get_following()
+	twit = twit_controller("johnculberson", 10)
+	twit.get_info()
