@@ -1,3 +1,5 @@
+import json
+
 import twint 
 
 class twitter():
@@ -47,3 +49,54 @@ class twitter():
         twint.run.Followers(c)
         users = twint.output.user_object
         return users
+
+    def tweet_details(self, tweets:list) -> json:   
+        tweet_info = {
+            "username" : self.username,
+            "details" : []
+        }
+        sub_tweet = {}
+
+        for tweet in tweets:
+            sub_tweet = {
+                "id" : tweet.id,
+                "twit" : tweet.tweet,
+                "mention" : tweet.mentions,
+                "num_likes" : tweet.likes_count,
+                "num_retweet" : tweet.retweets_count,
+                "url" : tweet.urls,
+                "location" : tweet.location,
+                "photo" : tweet.photos,
+                "video" : tweet.video,
+                "type" : tweet.type
+            }
+            tweet_info['details'].append(sub_tweet)
+        
+        return tweet_info
+
+    def following_details(self, following:list) -> json:
+        following_info = {
+            "username": self.username,
+            "details": []
+        }
+        sub_follow = {}
+
+        for individual in following:
+            sub_follow = {
+                "id" : individual.id,
+                "name" : individual.name,
+                "username" : individual.username,
+                "followers" : individual.followers,
+                "following" : individual.following,
+                "private" : True if individual.is_private else False,
+                "verified" : True if individual.is_verified else False,
+                "likes" : individual.likes,
+                "location" : individual.location,
+                "media_count" : individual.media_count,
+                "num_tweets" : individual.tweets,
+                "type" : individual.type,
+                "url" : individual.url
+            }
+            following_info['details'].append(sub_follow)
+
+        return following_info
