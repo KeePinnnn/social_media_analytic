@@ -27,7 +27,7 @@ class twitter():
 
         twint.run.Search(c)
         tweets = twint.output.tweets_object
-        return tweets
+        return self.tweet_details(tweets)
 
     def get_followers(self) -> list:
         c = twint.Config()
@@ -48,7 +48,7 @@ class twitter():
 
         twint.run.Followers(c)
         users = twint.output.user_object
-        return users
+        return self.following_details(users)
 
     def tweet_details(self, tweets:list) -> json:   
         tweet_info = {

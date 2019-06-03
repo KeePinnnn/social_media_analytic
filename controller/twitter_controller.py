@@ -4,13 +4,16 @@ class twit_controller():
     def __init__(self, username:str, limit:int):
         self.twitter = twitter(username, limit)
 
-    def get_info(self):
-        # tweets = self.twitter.get_tweets()
-        # print(tweets)
-        # tweets_information = self.twitter.tweet_details(tweets)
-        # print(tweets_information)
-        # followers = self.twitter.get_followers()
+    def get_followings(self):
         following = self.twitter.get_following()
         print(following)
-        following_information = self.twitter.following_details(following)
-        print(following_information)
+
+    def get_followers(self):
+        followers = self.twitter.get_followers()
+        print(followers)
+
+    def get_twit_info(self):
+        tweets = self.twitter.get_tweets()
+        print(tweets)
+        for twit in tweets['details']:
+

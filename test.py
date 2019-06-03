@@ -8,4 +8,4 @@ if __name__ == "__main__":
 	# print(G.get_score(text))
 
 	twit = twit_controller("johnculberson", 10)
-	twit.get_info()
+	twit.get_twit_info()
