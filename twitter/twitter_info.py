@@ -65,6 +65,7 @@ class twitter():
                 "num_likes" : tweet.likes_count,
                 "num_retweet" : tweet.retweets_count,
                 "url" : tweet.urls,
+                "hashtag": tweet.hashtags,
                 "location" : tweet.location,
                 "photo" : tweet.photos,
                 "video" : tweet.video,

@@ -1,3 +1,4 @@
+from functools import reduce
 import json
 
 import requests
@@ -6,10 +7,13 @@ from config import API_KEY, GOOGLE_URL, GOOGLE_VARIANT
 
 
 class GoogleInfor():
-	def __init__(self, text:str):
-		self.text = text
+	def __init__(self):
+		self.key = API_KEY
+		self.url = GOOGLE_URL
+		self.singlish = [" la", " hor", " eh", " liao", " ah"]
 
 	def set_text(self, text:str):
+		text = reduce(lambda a,b: a.replace(b, ''), self.singlish, text)
 		self.text = text
 
 	def get_text(self):
@@ -23,8 +27,8 @@ class GoogleInfor():
 			score is the total value of magnitude from the sentence
 		'''
 
-		url = GOOGLE_URL + GOOGLE_VARIANT['sentiment']
-		key = API_KEY
+		url = self.url + GOOGLE_VARIANT['sentiment']
+		key = self.key
 
 		data = {
 				"document":
@@ -34,7 +38,7 @@ class GoogleInfor():
 					}
 				}
 		
-		r = requests.post(url + "?key=" + API_KEY, headers={"Content-Type": "application/json"}, data=json.dumps(data))
+		r = requests.post(url + "?key=" + self.key, headers={"Content-Type": "application/json"}, data=json.dumps(data))
 		return json.loads(r.text)
 	
 	def analyze_entity_sentiment(self) -> json:
@@ -44,8 +48,8 @@ class GoogleInfor():
 			salience represent the relevant of the entity to the entire given information
 		'''
 
-		url = GOOGLE_URL + GOOGLE_VARIANT['entityS']
-		key = API_KEY
+		url = self.url + GOOGLE_VARIANT['entityS']
+		key = self.key
 
 		data = {
 				"document":
@@ -55,5 +59,5 @@ class GoogleInfor():
 					}
 				}
 		
-		r = requests.post(url + "?key=" + API_KEY, headers={"Content-Type": "application/json"}, data=json.dumps(data))
+		r = requests.post(url + "?key=" + self.key, headers={"Content-Type": "application/json"}, data=json.dumps(data))
 		return json.loads(r.text)

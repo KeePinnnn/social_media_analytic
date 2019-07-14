@@ -1,11 +1,23 @@
-from controller.api_controller import GoogleController
+from controller.google_controller import GoogleController
 from controller.twitter_controller import twit_controller
+from controller.text_controller import text_controller
+from controller.file_controller import file_controller
 
 if __name__ == "__main__":
+	f = file_controller()
+	f.set_file("clean1.csv")
+	raw_data = f.retrieve_info()
+
+	for index, row in raw_data.iterrows():
+		t = text_controller()
+		t.create_blob(row['content'])
+
+
+
 	# G = GoogleController()
-	# text = "Investing is a tool for building wealth ah, but it is not only for the wealthy la. Anyone can get started on an investing program, and various vehicles make it easy to begin with small amounts and add to a portfolio periodically. "
+	# text = "Fielded questions on China, trade tensions, the global economic outlook, the next GE & more at a ‘fireside chat’ at the Business China Awards 2019 event last night. Congratulations to all the award winners!"
 
 	# print(G.get_score(text))
 
-	twit = twit_controller("johnculberson", 10)
-	twit.get_twit_info()
+	# twit = twit_controller("leehsienloong", 10)
+	# twit.get_twit_info()
