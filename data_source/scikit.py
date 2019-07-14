@@ -4,8 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score
 
-file = './clean1.csv'
-file_test = './clean2.csv'
+file = './processed_data.csv'
+# file_test = './clean2.csv'
 
 data = pd.read_csv(file, engine='python', encoding='utf-8', error_bad_lines=False)
 # testing_data = pd.read_csv(file_test, engine='python', encoding='utf-8', error_bad_lines=False)

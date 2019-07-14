@@ -5,5 +5,5 @@ class text_controller():
         # remove left and right white spaces
         sentence = text.lstrip().rstrip()
         self.blob = text_blob(sentence)
-        print(self.blob.get_sentiment())
+        return self.blob.get_sentiment()
         
