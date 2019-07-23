@@ -13,5 +13,3 @@ class process_data():
         data['authors'] = self.le.fit_transform(data['authors'])
         data['type'] = self.le.fit_transform(data['type'])
         return data
-
-    
