@@ -21,11 +21,12 @@ if __name__ == "__main__":
 
 	# process_data.to_csv('./data_source/processed_data.csv', encoding='utf-8', index=False)
 
-	# d = data_controller()
-	# normalise_process_data = d.testing_normal()
-	# print(normalise_process_data)
+	d = data_controller()
+	normalise_process_data = d.testing_normal()
+	print(normalise_process_data)
 
-	# normalise_process_data.to_csv('./data_source/min_max_data.csv', encoding='utf-8', index=False)
+	normalise_process_data.to_csv('./data_source/least_square.csv', encoding='utf-8', index=False)
 
 	d = data_controller()
-	d.psychic_algo('min_max_data.csv')
+	d.psychic_algo('least_square.csv')
+

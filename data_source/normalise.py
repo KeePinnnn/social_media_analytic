@@ -21,7 +21,36 @@ class normalise():
         for each_header in self.header:
             result = minmax_scale(np.array(data[each_header].tolist()))
             new_df[each_header] = result
-            print(new_df)
+
+        data.update(new_df)
+        return data
+
+    def max_normalise(self, data:object):
+        new_df = {}
+        for each_header in self.header:
+            result = normalize(np.array(data[each_header].tolist()).reshape(1, -1), norm="max")[0]
+            print(result)
+            new_df[each_header] = result
+
+        data.update(new_df)
+        return data
+
+    def least_absolute(self, data:object):
+        new_df = {}
+        for each_header in self.header:
+            result = normalize(np.array(data[each_header].tolist()).reshape(1, -1), norm="l1")[0]
+            print(result)
+            new_df[each_header] = result
+
+        data.update(new_df)
+        return data
+
+    def least_square(self, data:object):
+        new_df = {}
+        for each_header in self.header:
+            result = normalize(np.array(data[each_header].tolist()).reshape(1, -1), norm="l2")[0]
+            print(result)
+            new_df[each_header] = result
 
         data.update(new_df)
         return data

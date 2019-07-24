@@ -15,12 +15,18 @@ class data_controller():
         self.normalise_data = self.normalise.max_min(data)
         return self.normalise_data
 
+    def normal_max(self, data:object):
+        self.normalise_data = self.normalise.max_normalise(data)
+        return self.normalise_data
+
     def testing_normal(self):
         self.raw_normalise_data = self.normalise.read_file()
-        self.normalise_data = self.normalise.max_min(self.raw_normalise_data)
+        self.normalise_data = self.normalise.max_normalise(self.raw_normalise_data)
         return self.normalise_data
 
     def psychic_algo(self, file_path:str):
         self.psychic = psychic(file_path)
-        self.psychic.svc(3)
+        self.psychic.naive_bay()
+        self.psychic.svc(0)
+        self.psychic.k_neighbors(3)
 
