@@ -19,9 +19,12 @@ class data_controller():
         self.normalise_data = self.normalise.max_normalise(data)
         return self.normalise_data
 
-    def testing_normal(self):
-        self.raw_normalise_data = self.normalise.read_file()
-        self.normalise_data = self.normalise.max_normalise(self.raw_normalise_data)
+    def normal_square(self, data:object):
+        self.normalise_data = self.normalise.least_square(data)
+        return self.normalise_data 
+    
+    def normal_absolute(self, data:object):
+        self.normalise_data = self.normalise.least_absolute(data)
         return self.normalise_data
 
     def psychic_algo(self, file_path:str):
