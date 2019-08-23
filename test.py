@@ -6,9 +6,9 @@ from controller.data_controller import data_controller
 
 if __name__ == "__main__":
 	# f = file_controller()
-	# d = data_controller()
+	d = data_controller()
 	# t = text_controller()
-	# f.set_file("clean1.csv")
+	# f.set_file("normal_absolute_data_1.csv")
 	# raw_data = f.retrieve_info()
 
 	# process_data = d.format_data(raw_data)
@@ -19,14 +19,14 @@ if __name__ == "__main__":
 	# 	process_data.loc[index, 'content'] = content[0]
 	# 	process_data.loc[index, 'title'] = title[0]
 
-	# process_data.to_csv('./data_source/processed_data.csv', encoding='utf-8', index=False)
+	# process_data.to_csv('./data_source/processed_data_1.csv', encoding='utf-8', index=False)
 
-	d = data_controller()
-	normalise_process_data = d.testing_normal()
-	print(normalise_process_data)
+	# d = data_controller()
+	# normalise_process_data = d.normal_max(raw_data)
+	# print(normalise_process_data)
 
-	normalise_process_data.to_csv('./data_source/least_square.csv', encoding='utf-8', index=False)
+	# normalise_process_data.to_csv('./data_source/normal_absolute_data_1.csv', encoding='utf-8', index=False)
 
-	d = data_controller()
-	d.psychic_algo('least_square.csv')
+	# d = data_controller()
+	d.psychic_algo('normal_absolute_data_1.csv')
 
