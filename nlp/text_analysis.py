@@ -1,3 +1,5 @@
+from genism.models import KeyedVectors
+
 from textblob import TextBlob
 from textblob import Word
 
@@ -29,3 +31,6 @@ class text_blob():
     def detect_lang(self, text:str):
         source = TextBlob(unicode(text))
         return source.detect_language()
+
+    def google_model(self):
+        return KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary=True)
