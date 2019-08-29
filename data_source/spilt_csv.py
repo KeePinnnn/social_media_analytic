@@ -7,33 +7,55 @@ import re
 
 file = './news_cleaned_2018_02_13.csv'
 raw_data = './raw_data/data_set_'
+shuffle_data = './shuffled_data/shuffled_data_'
 chunksize = 10 ** 4
-counter = 665
+counter = 1
 
-list_file = [f for f in os.listdir('./shuffle_raw_data/')]
-str_file = ''.join(list_file)
-regex = re.compile('\d+')
-file_num = regex.findall(str_file)
-while file_num and len(file_num) > 1:
-    first = random.choice(file_num)
-    file_num.remove(first)
-    second = random.choice(file_num)
 
-    first_data = pd.read_csv('./shuffle_raw_data/shuffle_data_' + first + '.csv', engine='python', encoding='utf-8', error_bad_lines=False)
-    second_data = pd.read_csv('./shuffle_raw_data/shuffle_data_' + second + '.csv', engine='python', encoding='utf-8', error_bad_lines=False)
-    combine_data = pd.concat([first_data, second_data])
-    combine_data = combine_data.sample(frac=1).reset_index(drop=True)
+for chunk in pd.read_csv(file, engine='python', encoding='utf-8', chunksize=chunksize):
+    chunk.to_csv(shuffle_data + str(counter) + '.csv', encoding='utf-8')
+    counter += 1
 
-    combine_data.to_csv('./shuffle_raw_data/shuffle_data_' + second + '.csv', encoding='utf-8', index=False)
-    if os.path.exists('./shuffle_raw_data/shuffle_data_' + first + '.csv'):
-        os.remove('./shuffle_raw_data/shuffle_data_' + first + '.csv')
-        print("remove shuffle_data_" + first + ".csv")
-    else:
-        print("unable to remove remove shuffle_data_" + first + ".csv - probably due to pathing")
+# with open(file) as fp:
+#     for i, line in enumerate(fp):
+#         print(f'this is {i} line')
+#         print(line)
+#         print('\n')
+#         if i > 10:
+#             break
 
-    print(second)
+# print("start")
+# data = pd.read_csv('./news_cleaned_2018_02_13.csv', engine='python', encoding='utf-8', error_bad_lines=False)
+# print("read data")
+# shuffle_data = data.sample(frac=1).reset_index(drop=True)
+# print("done shuffle")
+# shuffle_data.to_csv('./shuffled_data.csv', encoding='utf-8', index=False)
+# print("write to csv")
 
-print("done combining all the data")
+# list_file = [f for f in os.listdir('./shuffle_raw_data/')]
+# str_file = ''.join(list_file)
+# regex = re.compile('\d+')
+# file_num = regex.findall(str_file)
+# while file_num and len(file_num) > 1:
+#     first = random.choice(file_num)
+#     file_num.remove(first)
+#     second = random.choice(file_num)
+
+#     first_data = pd.read_csv('./shuffle_raw_data/shuffle_data_' + first + '.csv', engine='python', encoding='utf-8', error_bad_lines=False)
+#     second_data = pd.read_csv('./shuffle_raw_data/shuffle_data_' + second + '.csv', engine='python', encoding='utf-8', error_bad_lines=False)
+#     combine_data = pd.concat([first_data, second_data])
+#     combine_data = combine_data.sample(frac=1).reset_index(drop=True)
+
+#     combine_data.to_csv('./shuffle_raw_data/shuffle_data_' + second + '.csv', encoding='utf-8', index=False)
+#     if os.path.exists('./shuffle_raw_data/shuffle_data_' + first + '.csv'):
+#         os.remove('./shuffle_raw_data/shuffle_data_' + first + '.csv')
+#         print("remove shuffle_data_" + first + ".csv")
+#     else:
+#         print("unable to remove remove shuffle_data_" + first + ".csv - probably due to pathing")
+
+#     print(second)
+
+# print("done combining all the data")
 
 
 # first round of spilting the data
