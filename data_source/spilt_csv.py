@@ -15,7 +15,7 @@ counter = 1
 for chunk in pd.read_csv(file, engine='python', encoding='utf-8', chunksize=chunksize):
     chunk.to_csv(shuffle_data + str(counter) + '.csv', encoding='utf-8')
     counter += 1
-
+ 
 # with open(file) as fp:
 #     for i, line in enumerate(fp):
 #         print(f'this is {i} line')
