@@ -9,20 +9,31 @@ file = './news_cleaned_2018_02_13.csv'
 raw_data = './raw_data/data_set_'
 shuffle_data = './shuffled_data/shuffled_data_'
 chunksize = 10 ** 4
-counter = 1
-
-
-for chunk in pd.read_csv(file, engine='python', encoding='utf-8', chunksize=chunksize):
-    chunk.to_csv(shuffle_data + str(counter) + '.csv', encoding='utf-8')
-    counter += 1
+counter = 2
  
-# with open(file) as fp:
-#     for i, line in enumerate(fp):
-#         print(f'this is {i} line')
-#         print(line)
-#         print('\n')
-#         if i > 10:
-#             break
+print("start")
+start_file = pd.read_csv('./after_drop_data/after_drop_data_1.csv', engine='python', encoding='utf-8', error_bad_lines=False)
+while counter < 167:
+    next_file = pd.read_csv(f'./after_drop_data/after_drop_data_{counter}.csv', engine='python', encoding='utf-8', error_bad_lines=False)
+    combine_data = pd.concat([start_file, next_file])
+    start_file = combine_data 
+    combine_data = ""
+    os.remove(f'./after_drop_data/after_drop_data_{counter}.csv')
+    counter += 1
+    print(counter)
+
+print("start shuffling")
+combine_data = start_file.sample(frac=1).reset_index()
+print("end shuffling") 
+combine_data.to_csv('./after_drop_data/combined_data_1.csv', encoding=False, index=False)
+print("done")
+
+# print("start")
+# for chunk in pd.read_csv(file, engine='python', encoding='utf-8', chunksize=chunksize):
+#     chunk.to_csv(shuffle_data + str(counter) + '.csv', encoding='utf-8')
+#     counter += 1
+
+# print("done")
 
 # print("start")
 # data = pd.read_csv('./news_cleaned_2018_02_13.csv', engine='python', encoding='utf-8', error_bad_lines=False)
