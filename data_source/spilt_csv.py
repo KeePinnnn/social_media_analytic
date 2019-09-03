@@ -9,11 +9,11 @@ file = './news_cleaned_2018_02_13.csv'
 raw_data = './raw_data/data_set_'
 shuffle_data = './shuffled_data/shuffled_data_'
 chunksize = 10 ** 4
-counter = 2
+counter = 500
  
 print("start")
-start_file = pd.read_csv('./after_drop_data/after_drop_data_1.csv', engine='python', encoding='utf-8', error_bad_lines=False)
-while counter < 167:
+start_file = pd.read_csv('./after_drop_data/after_drop_data_499.csv', engine='python', encoding='utf-8', error_bad_lines=False)
+while counter < 665:
     next_file = pd.read_csv(f'./after_drop_data/after_drop_data_{counter}.csv', engine='python', encoding='utf-8', error_bad_lines=False)
     combine_data = pd.concat([start_file, next_file])
     start_file = combine_data 
@@ -25,7 +25,7 @@ while counter < 167:
 print("start shuffling")
 combine_data = start_file.sample(frac=1).reset_index()
 print("end shuffling") 
-combine_data.to_csv('./after_drop_data/combined_data_1.csv', encoding=False, index=False)
+combine_data.to_csv('./after_drop_data/combined_data_4.csv', encoding=False, index=False)
 print("done")
 
 # print("start")
