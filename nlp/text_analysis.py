@@ -1,4 +1,4 @@
-from genism.models import KeyedVectors
+from gensim.models import KeyedVectors
 
 from textblob import TextBlob
 from textblob import Word
