@@ -106,3 +106,9 @@ venv.bak/
 
 # csv file
 *.csv
+
+# DS_store
+.DS_Store
+
+# zip file
+*.zip
