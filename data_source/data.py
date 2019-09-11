@@ -77,3 +77,51 @@ class process_data():
             transform_dict[each_col] = self.label_encoder.fit_transform(each_col)
 
         return transform_dict
+
+    def read_file(self, file_path:str):
+        self.file = pd.read_csv(file_path, engine='python', encoding='utf-8', error_bad_lines=False)
+        return self.file
+
+    def max_min(self, data:object, header:list):
+        self.new_df = {}
+        self.data = data
+
+        for each_header in header:
+            result = minmax_scale(np.array(self.data[each_header].tolist()))
+            self.new_df[each_header] = result
+
+        self.data.update(self.new_df)
+        return self.data
+
+    def max_normalise(self, data:object, header:list):
+        self.new_df = {}
+        self.data = data
+
+        for each_header in header:
+            result = normalize(np.array(self.data[each_header].tolist()).reshape(1, -1), norm="max")[0]
+            self.new_df[each_header] = result
+
+        self.data.update(self.new_df)
+        return self.data
+
+    def least_absolute(self, data:object, header:list):
+        self.new_df = {}
+        self.data = data
+
+        for each_header in header:
+            result = normalize(np.array(self.data[each_header].tolist()),reshape(1, -1), norm="l1")[0]
+            self.new_df[each_header] = result
+
+        self.data.update(self.new_df)
+        return self.data
+
+    def least_square(self, data:object, header:list):
+        self.new_df = {}
+        self.data = data
+
+        for each_header in header:
+            result = normalize(np.array(self.data[each_header].tolist()),reshape(1, -1), norm="l2")[0]
+            self.new_df[each_header] = result
+
+        self.data.update(self.new_df)
+        return self.data
