@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import nltk
 
 from sklearn import preprocessing
 from sklearn.preprocessing import normalize
@@ -10,7 +11,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import LinearSVC
 from sklearn.metrics import accuracy_score
+from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
+from textblob import TextBlob
 
+import string
 import random
 import os
 import re 
@@ -33,7 +38,7 @@ class csv_file():
         self.save_file = save_file
         self.counter = 1
 
-        for chunk in pd.read_csv(self.file, engine='python', encoding='utf-8', chunksize=self.chunk, error_bad_lines=False)
+        for chunk in pd.read_csv(self.file, engine='python', encoding='utf-8', chunksize=self.chunk, error_bad_lines=False):
             chunk.to_csv(self.path + self.save_file + f'{self.counter}.csv', encoding='utf-8')
             self.counter += 1
 
@@ -74,6 +79,8 @@ class csv_file():
 class process_data():
     def __init__(self):
         self.label_encoder = preprocessing.LabelEncoder()
+        self.lmtzr = WordNetLemmatizer()
+        self.table = str.maketrans('', '', string.punctuation)
 
     def transform_data(self, data:object) -> object:
         self.data = data
@@ -86,6 +93,20 @@ class process_data():
     def read_file(self, file_path:str):
         self.file = pd.read_csv(file_path, engine='python', encoding='utf-8', error_bad_lines=False)
         return self.file
+
+    def clean_data(self, content:list):
+        clean_content = []
+        for sentence in content:
+            sentence = ([word.translate(self.table) for word in sentence.lower().split()])
+            sentence = ' '.join(x for x in sentence if x not in set(stopwords.words('english')))
+            sentence = re.sub('[^a-zA-Z]', ' ', sentence)
+            sentence = TextBlob(sentence).correct()
+            sentence = ' '.join([self.lmtzr.lemmatize(word, 'v') for word in sentence.split()])
+            
+            clean_content.append(sentence)
+
+        return clean_content
+
 
     def max_min(self, data:object, header:list):
         self.new_df = {}
