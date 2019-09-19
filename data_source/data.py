@@ -92,20 +92,51 @@ class process_data():
 
     def read_file(self, file_path:str):
         self.file = pd.read_csv(file_path, engine='python', encoding='utf-8', error_bad_lines=False)
-        return self.file
+        self.df = pd.DataFrame(data=self.file)
+        return self.df
+
+    def save_data(self, col_name:str):
+        if (len(self.clean_content) == self.df.shape[0]):
+            self.df.update(pd.DataFrame({col_name : self.clean_content}))
+            print("save done")
+            return self.df
+        else:
+            print(f'content length is {len(self.clean_content)} and df shape is {self.df.shape[0]}. Does not match')
+            return False
 
     def clean_data(self, content:list):
-        clean_content = []
+        self.clean_content = []
+        counter = 1
         for sentence in content:
-            sentence = ([word.translate(self.table) for word in sentence.lower().split()])
+            print(f"sentence is in {counter}")
+            counter += 1
+            sentence = self.sub_words(sentence.lower())
+            sentence = ([word.translate(self.table) for word in sentence.split()])
             sentence = ' '.join(x for x in sentence if x not in set(stopwords.words('english')))
             sentence = re.sub('[^a-zA-Z]', ' ', sentence)
             sentence = TextBlob(sentence).correct()
             sentence = ' '.join([self.lmtzr.lemmatize(word, 'v') for word in sentence.split()])
             
-            clean_content.append(sentence)
+            self.clean_content.append(sentence)
 
-        return clean_content
+        return self.clean_content
+
+    def sub_words(self, sentence:str):
+        # specific
+        sentence = re.sub(r"won\’t|won\'t", "will not", sentence)
+        sentence = re.sub(r"can\’t|can\'t", "can not", sentence)
+        
+        # general
+        sentence = re.sub(r"n\’t|n\'t", " not", sentence)
+        sentence = re.sub(r"\’re|\'re", " are", sentence)
+        sentence = re.sub(r"\’s|\'s", " is", sentence)
+        sentence = re.sub(r"\’d|\'d", " would", sentence)
+        sentence = re.sub(r"\’ll|\'ll", " will", sentence)
+        sentence = re.sub(r"\’t|\'t", " not", sentence)
+        sentence = re.sub(r"\’ve|\'ve", " have", sentence)
+        sentence = re.sub(r"\’m|\'m", " am", sentence)
+
+        return sentence
 
 
     def max_min(self, data:object, header:list):
