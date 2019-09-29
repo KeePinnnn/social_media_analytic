@@ -95,9 +95,10 @@ class process_data():
         self.df = pd.DataFrame(data=self.file)
         return self.df
 
-    def save_data(self, col_name:str):
+    def save_data(self, col_name:str, save_file:str):
         if (len(self.clean_content) == self.df.shape[0]):
             self.df.update(pd.DataFrame({col_name : self.clean_content}))
+            self.df.to_csv(save_file, encoding='utf-8', index=False)
             print("save done")
             return self.df
         else:
