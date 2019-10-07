@@ -37,8 +37,8 @@ def remove_dup():
     df = df.drop_duplicates(subset='tweet', keep='last')
     df.to_csv('./twitter_data.csv', encoding='utf-8', index=False)
 
-def read_file():
-    data = pd.read_csv('./twitter_data.csv', engine='python', encoding='utf-8')
+def read_file(file_path:str):
+    data = pd.read_csv(file_path, engine='python', encoding='utf-8')
     return pd.DataFrame(data)
 
 def remove_emoji(string):
@@ -53,7 +53,7 @@ def remove_emoji(string):
     return emoji_pattern.sub(r'', string)
 
 def clear_emoji():
-    df = read_file()
+    df = read_file('./twitter_data.csv')
     gs = goslate.Goslate()
 
 
@@ -72,7 +72,7 @@ def clear_emoji():
 
 
 def split_en_data():
-    df = read_file()
+    df = read_file('./twitter_data.csv')
 
     en_list = []
     others_list = []
@@ -100,5 +100,28 @@ def split_en_data():
     others_result.to_csv('./others_twitter_data.csv', encoding='utf-8', index=False)
 
 
+df = read_file('./en_twitter_data.csv')
+following_list = []
+follower_list = []
+likes_list = []
 
+for index, row in df.iterrows():
+    print(f"currently inside {index}")
+    c = twint.Config()
+    c.Username = row['username']
+    c.Pandas = True
+
+    twint.run.Lookup(c)
+
+    user_df = twint.storage.panda.User_df
+
+    print(user_df['following'])
+    print(user_df['followers'])
+    print(user_df['likes'])
+
+    follower_list.append(user_df['followers'])
+    following_list.append(user_df['following'])
+    likes_list.append(user_df['likes'])
+
+    twint.storage.panda.clean()
 
