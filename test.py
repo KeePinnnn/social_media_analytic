@@ -8,13 +8,13 @@ if __name__ == "__main__":
 	d = data.process_data()
 	counter = 1
 	# while counter < 5:
-	d.read_file('./data_source/after_drop_data/sample_data.csv')	
-	content = d.df['content']
+	d.read_file('./twitter/en_twitter_data.csv')	
+	content = d.df['tweet']
 
 	print(f"file number is {counter}")
 	d.clean_data(content)
 	print(f"file number is {counter}")
-	d.save_data("content", './data_source/after_drop_data/processed_data.csv')
+	d.save_data("tweet", './twitter/clean_en_data.csv')
 
 		# t = text_analysis.scikit(content)
 
