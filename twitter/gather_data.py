@@ -1,5 +1,9 @@
+from langdetect import detect
+
 import pandas as pd
+import goslate
 import twint 
+import re
 
 def twint_to_pandas(columns):
     return twint.output.panda.Tweets_df[columns]
@@ -32,3 +36,69 @@ def remove_dup():
 
     df = df.drop_duplicates(subset='tweet', keep='last')
     df.to_csv('./twitter_data.csv', encoding='utf-8', index=False)
+
+def read_file():
+    data = pd.read_csv('./twitter_data.csv', engine='python', encoding='utf-8')
+    return pd.DataFrame(data)
+
+def remove_emoji(string):
+    emoji_pattern = re.compile("["
+                           u"\U0001F600-\U0001F64F"  # emoticons
+                           u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                           u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                           u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                           u"\U00002702-\U000027B0"
+                           u"\U000024C2-\U0001F251"
+                           "]+", flags=re.UNICODE)
+    return emoji_pattern.sub(r'', string)
+
+def clear_emoji():
+    df = read_file()
+    gs = goslate.Goslate()
+
+
+    content_list = []
+    content = df['tweet']
+    counter = 1
+    for each in content:
+        print(f"currently inside {counter}")
+        clean_tweet = remove_emoji(each)
+        content_list.append(clean_tweet)
+
+        counter += 1
+
+    df.update(pd.DataFrame({'tweet': content_list}))
+    df.to_csv('./twitter_data.csv', encoding='utf-8', index=False)
+
+
+def split_en_data():
+    df = read_file()
+
+    en_list = []
+    others_list = []
+
+    for index, row in df.iterrows():
+        print(f"currently inside {index}")
+        try:
+            if detect(row['tweet']) == "en":
+                values = row.tolist()
+                dict = {"date":[values[1]], "username":[values[2]], "tweet":[values[3]], "hashtags":[values[4]], "nlikes":[values[5]], "link":[values[6]], "nreplies":[values[7]], "nretweets":[values[8]], "retweet":[values[9]], "search":[values[10]]}
+                en_list.append(pd.DataFrame.from_dict(dict))
+            else:
+                values = row.tolist()
+                dict = {"date":[values[1]], "username":[values[2]], "tweet":[values[3]], "hashtags":[values[4]], "nlikes":[values[5]], "link":[values[6]], "nreplies":[values[7]], "nretweets":[values[8]], "retweet":[values[9]], "search":[values[10]]}
+                others_list.append(pd.DataFrame.from_dict(dict))
+
+        except:
+            df = df.drop([index])
+            print("drop")
+
+    en_result = pd.concat(en_list, axis=0, ignore_index=True)
+    others_result = pd.concat(others_list, axis=0, ignore_index=True)
+
+    en_result.to_csv('./en_twitter_data.csv', encoding='utf-8', index=False)
+    others_result.to_csv('./others_twitter_data.csv', encoding='utf-8', index=False)
+
+
+
+
