@@ -12,9 +12,10 @@ if __name__ == "__main__":
     gmodel = KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary=True)
     print(dir(gmodel))
 
-    data = pd.read_csv('../data_source/after_drop_data/combined_data_1.csv', engine='python', encoding='utf-8')
-    df = pd.DataFrame(data)
-    content = remove_stopwords(strip_punctuation(df['content'][1]))
+    # data = pd.read_csv('../data_source/after_drop_data/combined_data_1.csv', engine='python', encoding='utf-8')
+    # df = pd.DataFrame(data)
+    # content = remove_stopwords(strip_punctuation(df['content'][1]))
+    content = "this is just for testing"
     print(gmodel.score(content.split()))
     # array = []
 

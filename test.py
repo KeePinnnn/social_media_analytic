@@ -5,7 +5,39 @@ from nlp import text_analysis
 
 
 if __name__ == "__main__":
+	print("start")
+	d = data.process_data()
+	d.read_file('./twitter/preprocess_data.csv')
+	tweets = d.df['tweet'].tolist()
 	
+	corpus_df = d.df.loc[:, ['tweet', 'search']]
+
+	tf_idf_score = []
+	for index, row in corpus_df.iterrows():
+		print(f"inside {index}")
+		tf_idf_score.append(d.vector_feature(row))
+
+	gmodel = text_analysis.text_vector(tweets)
+	print("done reading")
+
+	vector_list = []
+	for twit in tweets:
+		twit = twit.split()
+		words = [word for word in twit if word in gmodel.model.vocab]
+		twit = ' '.join(words)
+		vector = gmodel.model[twit]
+		vector_list.append(vector)
+
+	sentence_vector = []
+	for x in range(len(vector_list)):
+		sentence_vector.append(np.average(vector_list[x] * tf_idf_score[x]))
+		print(sentence_vector)
+
+
+
+	# normalize_corpus = np.vectorize(d.normalize_document)
+	# norm_corpus = normalize_corpus(tweets)
+	# print(len(norm_corpus))
 
 
 	# d = data.process_data()

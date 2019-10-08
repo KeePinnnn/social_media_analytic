@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import nltk
 
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import preprocessing
 from sklearn.preprocessing import normalize
 from sklearn.preprocessing import minmax_scale
@@ -81,6 +82,9 @@ class process_data():
         self.label_encoder = preprocessing.LabelEncoder()
         self.lmtzr = WordNetLemmatizer()
         self.table = str.maketrans('', '', string.punctuation)
+        self.wpt = nltk.WordPunctTokenizer()
+        self.stop_words = set(stopwords.words('english'))
+
 
     def transform_data(self, data:object) -> object:
         self.data = data
@@ -107,6 +111,25 @@ class process_data():
 
     def save_file(self, save_file:str):
         self.df.to_csv(save_file, encoding='utf-8', index=False)
+    
+    def vector_feature(self, row:list):
+        self.tfidf_vectoriser = TfidfVectorizer()
+        response = self.tfidf_vectoriser.fit_transform(row)
+        weights = np.asarray(response.mean(axis=0)).ravel().tolist()
+        
+        return np.average(weights)
+
+    def normalize_document(self, doc):
+        doc = re.sub(r'[^a-zA-Z\s]', '', doc, re.I|re.A)
+        doc = doc.lower()
+        doc = doc.strip()
+        # tokenize document
+        tokens = self.wpt.tokenize(doc)
+        # filter stopwords out of document
+        self.filtered_tokens = [token for token in tokens if token not in self.stop_words]
+        # re-create document from filtered tokens
+        doc = ' '.join(self.filtered_tokens)
+        return doc
 
     def clean_data(self, content:list):
         self.clean_content = []
