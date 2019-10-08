@@ -8,31 +8,46 @@ if __name__ == "__main__":
 	print("start")
 	d = data.process_data()
 	d.read_file('./twitter/preprocess_data.csv')
-	tweets = d.df['tweet'].tolist()
+	score = d.df['average_vector'].tolist()
+
+	normalised_data = d.scale_data(score)
+	print(normalised_data)
+
+	d.update_data("average_vector", normalised_data)
+	d.save_file('./twitter/preprocess_data.csv')
+
+
+	# print("start")
+	# d = data.process_data()
+	# d.read_file('./twitter/preprocess_data.csv')
+	# tweets = d.df['tweet'].tolist()
 	
-	corpus_df = d.df.loc[:, ['tweet', 'search']]
+	# corpus_df = d.df.loc[:, ['tweet', 'search']]
 
-	tf_idf_score = []
-	for index, row in corpus_df.iterrows():
-		print(f"inside {index}")
-		tf_idf_score.append(d.vector_feature(row))
+	# gmodel = text_analysis.text_vector(tweets)
+	# print("done reading")
 
-	gmodel = text_analysis.text_vector(tweets)
-	print("done reading")
+	# tf_idf_score = []
+	# for index, row in corpus_df.iterrows():
+	# 	print(f"inside {index}")
+	# 	tf_idf_score.append(d.vector_feature(row))
 
-	vector_list = []
-	for twit in tweets:
-		twit = twit.split()
-		words = [word for word in twit if word in gmodel.model.vocab]
-		twit = ' '.join(words)
-		vector = gmodel.model[twit]
-		vector_list.append(vector)
 
-	sentence_vector = []
-	for x in range(len(vector_list)):
-		sentence_vector.append(np.average(vector_list[x] * tf_idf_score[x]))
-		print(sentence_vector)
+	# sentence_vector = []
+	# for index, twit in enumerate(tweets):
+	# 	vector_list = []
+	# 	print(f"currently finding {index}")
+	# 	twit = twit.split()
+	# 	words = [word for word in twit if word in gmodel.model.vocab]
+	# 	for idx, word in enumerate(words):
+	# 		vector = gmodel.model[word]
+	# 		vector_list.append(vector)
 
+	# 	sentence_vector.append((np.average(vector_list) * tf_idf_score[index]))
+
+	# d.df['average_vector'] = sentence_vector
+	# d.save_file('./twitter/preprocess_data.csv')
+		
 
 
 	# normalize_corpus = np.vectorize(d.normalize_document)

@@ -111,13 +111,31 @@ class process_data():
 
     def save_file(self, save_file:str):
         self.df.to_csv(save_file, encoding='utf-8', index=False)
+
+    def update_data(self, col_name:str, values:list):
+        self.df.update(pd.DataFrame({col_name: values}))
     
     def vector_feature(self, row:list):
         self.tfidf_vectoriser = TfidfVectorizer()
-        response = self.tfidf_vectoriser.fit_transform(row)
-        weights = np.asarray(response.mean(axis=0)).ravel().tolist()
-        
+        score_list = []
+        matrix = self.tfidf_vectoriser.fit_transform(row)
+        # try:
+        #     matrix = self.tfidf_vectoriser.fit_transform(row)
+        #     feature_names = self.tfidf_vectoriser.get_feature_names()
+        #     feature_index = matrix[0,:].nonzero()[1]
+        #     tfidf_scores = zip(feature_index, [matrix[0, x] for x in feature_index])
+        #     for w, s in [(feature_names[i], s) for (i, s) in tfidf_scores]:
+        #         score_list.append(s)
+        # except:
+        #     score_list.append(0)
+        weights = np.asarray(matrix.mean(axis=0)).ravel().tolist()
+
         return np.average(weights)
+        # return weights
+
+    def scale_data(self, data:list):
+        return minmax_scale(data, feature_range=(-1, 1))
+
 
     def normalize_document(self, doc):
         doc = re.sub(r'[^a-zA-Z\s]', '', doc, re.I|re.A)
@@ -171,7 +189,7 @@ class process_data():
         self.data = data
 
         for each_header in header:
-            result = minmax_scale(np.array(self.data[each_header].tolist()))
+            result = minmax_scale(datanp.array(self.data[each_header].tolist()))
             self.new_df[each_header] = result
 
         self.data.update(self.new_df)
