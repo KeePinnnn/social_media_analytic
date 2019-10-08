@@ -105,6 +105,9 @@ class process_data():
             print(f'content length is {len(self.clean_content)} and df shape is {self.df.shape[0]}. Does not match')
             return False
 
+    def save_file(self, save_file:str):
+        self.df.to_csv(save_file, encoding='utf-8', index=False)
+
     def clean_data(self, content:list):
         self.clean_content = []
         counter = 1

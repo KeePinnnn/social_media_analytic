@@ -1,3 +1,4 @@
+from pattern.en import parse, Sentence, modality
 from gensim.models import KeyedVectors
 from adjustText import adjust_text
 from sklearn.manifold import TSNE
@@ -9,7 +10,6 @@ import gensim
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-
 
 class text_blob():
     def __init__(self, text:str):
@@ -88,6 +88,12 @@ class text_vector():
 
         plt.show()
         
-        
+class text_modality():
+    def get_score(self, content:str):
+        self.sent = parse(content, lemmata=True)
+        self.sent = Sentence(self.sent)
+        self.modality = modality(self.sent)
+
+        return self.modality
 
     
