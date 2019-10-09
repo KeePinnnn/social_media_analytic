@@ -50,12 +50,12 @@ test_encoded = encoder.transform(test_type)
 num_classes = len(encoder.classes_)
 print(num_classes)
 
-binary_label_head = tf.contrib.estimator.binary_classification_head(
+binary_label_head = tf.estimator.MultiLabelHead(
     num_classes,
     loss_reduction=tf.losses.Reduction.SUM_OVER_BATCH_SIZE
 )
 
-estimator = tf.contrib.estimator.DNNEstimator(
+estimator = tf.estimator.DNNEstimator(
     head=binary_label_head,
     hidden_units=[64,10],
     feature_columns=[text_embedding]
