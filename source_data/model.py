@@ -7,6 +7,7 @@ import tensorflow_hub as hub
 print("start")
 data = pd.read_csv('./clean_dataset.csv')
 df = pd.DataFrame(data)
+df = df.sample(frac=1).reset_index(drop=True)
 
 content = df['text']
 type = df['type']
@@ -22,12 +23,14 @@ train_author = author[:train_size].astype('str')
 train_title = title[:train_size].astype('str')
 train_url = url[:train_size].astype('str')
 train_type = type[:train_size]
+train_testing = np.random.rand(len(train_type), 1)
 
 test_content = content[train_size:].astype('str')
 test_author = author[train_size:].astype('str')
 test_title = title[train_size:].astype('str')
 test_url = url[train_size:].astype('str')
 test_type = type[train_size:]
+test_testing = np.random.rand(len(test_type), 1)
 
 # text_embedding = hub.text_embedding_column(
 #     "content", 
@@ -65,6 +68,8 @@ url_embedding = hub.text_embedding_column(
     trainable=False
 )
 
+test = tf.feature_column.numeric_column("test")
+
 # text_embedding = hub.text_embedding_column(
 #     "content", 
 #     module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1"
@@ -83,17 +88,17 @@ binary_label_head = tf.contrib.estimator.binary_classification_head(
 estimator = tf.estimator.DNNEstimator(
     head=binary_label_head,
     hidden_units=[64,32],
-    feature_columns=[text_embedding, title_embedding, author_embedding, url_embedding],
-    batch_norm=True,
-    model_dir="./estimator_64"
+    feature_columns=[text_embedding, title_embedding, author_embedding, url_embedding, test],
+    batch_norm=True
+    # model_dir="./estimator"
 )
 
 features = {
-  "content": np.array(train_content),
-  "title": np.array(train_title), 
-  "author": np.array(train_author),
-  "url": np.array(train_url)
-
+    "content": np.array(train_content),
+    "title": np.array(train_title), 
+    "author": np.array(train_author),
+    "url": np.array(train_url),
+    "test": train_testing
 }
 labels = np.array(train_type).astype(np.int32)
 
@@ -103,7 +108,7 @@ train_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn(
     features, 
     labels, 
     shuffle=True, 
-    batch_size=64, 
+    batch_size=128, 
     num_epochs=10
 )
 
@@ -114,7 +119,8 @@ eval_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
                 "content": np.array(test_content).astype(np.str),
                 "title": np.array(test_title).astype(np.str),
                 "author": np.array(test_author).astype(np.str),
-                "url": np.array(test_url).astype(np.str)
+                "url": np.array(test_url).astype(np.str),
+                "test": test_testing
                 }, 
                 np.array(test_type).astype(np.int32), 
                 shuffle=True 
@@ -153,7 +159,7 @@ predict_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
                 "author": np.array(raw_author_test).astype(np.str),
                 "url": np.array(raw_url_test).astype(np.str)
                 }, 
-                shuffle=True
+                shuffle=False
                 )
 results = estimator.predict(predict_input_fn)
 for each in results:
