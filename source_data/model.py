@@ -11,7 +11,7 @@ data = pd.read_csv('./clean_dataset.csv')
 df = pd.DataFrame(data)
 df = df.sample(frac=1).reset_index(drop=True)
 
-kf = KFold(n=5)
+kf = KFold(n_splits=5)
 
 content = df['text'].values
 type = df['type'].values
@@ -19,39 +19,31 @@ title = df['title'].values
 author = df['authors'].values
 url = df['url'].values
 
-# text_embedding = hub.text_embedding_column(
-#     "content", 
-#     module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
-#     trainable=False
-# )
-
-# text_embedding = hub.text_embedding_column(
-#     "content", 
-#     module_spec="https://tfhub.dev/google/elmo/2",
-#     trainable=False
-# )
-
 text_embedding = hub.text_embedding_column(
     "content", 
-    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    # module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
     trainable=False
 )
 
 title_embedding = hub.text_embedding_column(
     "title", 
-    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    # module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
     trainable=False
 )
 
 author_embedding = hub.text_embedding_column(
     "author", 
-    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    # module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
     trainable=False
 )
 
 url_embedding = hub.text_embedding_column(
     "url", 
-    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    # module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
     trainable=False
 )
 
@@ -77,7 +69,7 @@ estimator = tf.estimator.DNNEstimator(
     hidden_units=[128,64],
     feature_columns=[text_embedding, title_embedding, author_embedding, url_embedding],
     batch_norm=True,
-    model_dir="./estimator_128_64_64"
+    model_dir="./estimator_universal"
 )
 
 
@@ -119,18 +111,18 @@ for train_index, test_index in kf.split(type):
     print("start training")
     print(estimator.train(input_fn=train_input_fn))
 
-eval_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
-                "content": test_content,
-                "title": test_title,
-                "author": test_author,
-                "url": test_url
-                }, 
-                test_type), 
-                shuffle=False 
-                )
+    eval_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
+                    "content": test_content,
+                    "title": test_title,
+                    "author": test_author,
+                    "url": test_url
+                    }, 
+                    test_type, 
+                    shuffle=False 
+                    )
 
-print("start testing")
-print(estimator.evaluate(input_fn=eval_input_fn))
+    print("start testing")
+    print(estimator.evaluate(input_fn=eval_input_fn))
 
 # raw_content_test = [
 #     "Why won't the Corupt Fake News blame Low IQ Rick Perry for my crimes?! Its NOT MY FAULT that I bribed Ukraine to interfere with the 2020 US election! Dumb as a rock Rick Perry made me do it! Rick Perry says stuff and keeps outsmarting me! Treason!",
