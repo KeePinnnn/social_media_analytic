@@ -32,7 +32,6 @@ def verified_score():
     df_keep.to_csv('./author_dataset.csv', index=False)
 
 def user_tweet(username:str):
-    print(username)
     try:
         c = twint.Config()
         c.Limit = 100
