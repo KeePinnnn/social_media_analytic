@@ -15,35 +15,39 @@ kf = KFold(n_splits=5)
 
 content = df['text'].values
 type = df['type'].values
-title = df['title'].values
-author = df['authors'].values
+# title = df['title'].values
+# author = df['authors'].values
 url = df['url'].values
 
 text_embedding = hub.text_embedding_column(
     "content", 
-    # module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
-    module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
+    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    # module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
+    # module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1",
     trainable=False
 )
 
 title_embedding = hub.text_embedding_column(
     "title", 
-    # module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
-    module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
+    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    # module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
+    # module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1",
     trainable=False
 )
 
 author_embedding = hub.text_embedding_column(
     "author", 
-    # module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
-    module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
+    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    # module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
+    # module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1",
     trainable=False
 )
 
 url_embedding = hub.text_embedding_column(
     "url", 
-    # module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
-    module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
+    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+    # module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
+    # module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1",
     trainable=False
 )
 
@@ -67,32 +71,32 @@ binary_label_head = tf.contrib.estimator.binary_classification_head(
 estimator = tf.estimator.DNNEstimator(
     head=binary_label_head,
     hidden_units=[128,64],
-    feature_columns=[text_embedding, title_embedding, author_embedding, url_embedding],
+    feature_columns=[text_embedding, url_embedding],
     batch_norm=True,
-    model_dir="./estimator_universal"
+    model_dir="./estimator_google"
 )
 
 
 for train_index, test_index in kf.split(type):
 
     train_content = content[train_index].astype(np.str)
-    train_author = author[train_index].astype(np.str)
-    train_title = title[train_index].astype(np.str)
+    # train_author = author[train_index].astype(np.str)
+    # train_title = title[train_index].astype(np.str)
     train_url = url[train_index].astype(np.str)
     train_type = type[train_index].astype(np.int32)
     # train_testing = np.random.rand(len(train_type), 1)
 
     test_content = content[test_index].astype(np.str)
-    test_author = author[test_index].astype(np.str)
-    test_title = title[test_index].astype(np.str)
+    # test_author = author[test_index].astype(np.str)
+    # test_title = title[test_index].astype(np.str)
     test_url = url[test_index].astype(np.str)
     test_type = type[test_index].astype(np.int32)
     # test_testing = np.random.rand(len(test_type), 1)
 
     features = {
         "content": train_content,
-        "title": train_title, 
-        "author": train_author,
+        # "title": train_title, 
+        # "author": train_author,
         "url": train_url
         # "test": train_testing
     }
@@ -113,8 +117,8 @@ for train_index, test_index in kf.split(type):
 
     eval_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
                     "content": test_content,
-                    "title": test_title,
-                    "author": test_author,
+                    # "title": test_title,
+                    # "author": test_author,
                     "url": test_url
                     }, 
                     test_type, 
