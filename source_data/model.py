@@ -6,127 +6,83 @@ import tensorflow_hub as hub
 
 from sklearn.model_selection import KFold
 
-print("start")
-data = pd.read_csv('./clean_dataset.csv')
-df = pd.DataFrame(data)
-df = df.sample(frac=1).reset_index(drop=True)
+class embedding_model():
+    def __init__(self, file_path:str):
+        self.data = pd.read_csv(file_path)
+        self.df = pd.DataFrame(self.data)
+        self.df['username'] = self.df['username'].fillna('')
+        # self.df = self.df.sample(frac=1).reset_index(drop=True)
+        self.kfold = KFold(n_splits=5)
 
-kf = KFold(n_splits=5)
+    def feature_input(self):
+        self.content = self.df['text'].values
+        self.type = self.df['type'].values
 
-content = df['text'].values
-type = df['type'].values
-# title = df['title'].values
-# author = df['authors'].values
-url = df['url'].values
+    def embedding_feature(self):
+        self.text_embedding = hub.text_embedding_column(
+            "content", 
+            module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+            trainable=False
+        )
 
-text_embedding = hub.text_embedding_column(
-    "content", 
-    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
-    # module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
-    # module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1",
-    trainable=False
-)
+    def model_setup(self):
+        self.binary_label_head = tf.contrib.estimator.binary_classification_head(
+            loss_reduction=tf.losses.Reduction.SUM_OVER_BATCH_SIZE
+        )
 
-title_embedding = hub.text_embedding_column(
-    "title", 
-    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
-    # module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
-    # module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1",
-    trainable=False
-)
+        self.estimator = tf.estimator.DNNEstimator(
+            head=self.binary_label_head,
+            hidden_units=[128,64],
+            feature_columns=[self.text_embedding],
+            batch_norm=True,
+            model_dir="./estimator_training"
+        )
 
-author_embedding = hub.text_embedding_column(
-    "author", 
-    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
-    # module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
-    # module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1",
-    trainable=False
-)
+    def train_model(self):
+        for train_index, test_index in self.kfold.split(self.type):
 
-url_embedding = hub.text_embedding_column(
-    "url", 
-    module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
-    # module_spec="https://tfhub.dev/google/universal-sentence-encoder/2",
-    # module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1",
-    trainable=False
-)
+            train_content = self.content[train_index].astype(np.str)
+            train_type = self.type[train_index].astype(np.int32)
 
-test = tf.feature_column.numeric_column("test")
+            test_content = self.content[test_index].astype(np.str)
+            test_type = self.type[test_index].astype(np.int32)
 
-# text_embedding = hub.text_embedding_column(
-#     "content", 
-#     module_spec="https://tfhub.dev/google/Wiki-words-500-with-normalization/1"
-# )
+            features = {
+                "content": train_content,
+            }
+            labels = train_type
 
-# train_input_fn = tf.estimator.inputs.pandas_input_fn(
-#     train_content, train_type, num_epochs=10, shuffle=True, batch_size=32)
+            train_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn(
+                features, 
+                labels, 
+                shuffle=False, 
+                batch_size=64, 
+                num_epochs=10
+            )
 
-# predict_test_input_fn = tf.estimator.inputs.pandas_input_fn(
-#     test_content, test_type, shuffle=False)
+            print("start training")
+            self.estimator.train(input_fn=train_input_fn)
 
-binary_label_head = tf.contrib.estimator.binary_classification_head(
-    loss_reduction=tf.losses.Reduction.SUM_OVER_BATCH_SIZE
-)
+    def test_model(self, train_content:object, test_content:object):
+        eval_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
+                        "content": train_content,
+                        },  
+                        test_content,
+                        shuffle=False 
+                        )
 
-estimator = tf.estimator.DNNEstimator(
-    head=binary_label_head,
-    hidden_units=[128,64],
-    feature_columns=[text_embedding, url_embedding],
-    batch_norm=True,
-    model_dir="./estimator_google"
-)
+        print("start predicting")
+        return self.estimator.evaluate(input_fn=eval_input_fn)
 
+    def predict_model(self, content:object):
+        eval_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
+                        "content": content,
+                        },  
+                        shuffle=False 
+                        )
 
-for train_index, test_index in kf.split(type):
-
-    train_content = content[train_index].astype(np.str)
-    # train_author = author[train_index].astype(np.str)
-    # train_title = title[train_index].astype(np.str)
-    train_url = url[train_index].astype(np.str)
-    train_type = type[train_index].astype(np.int32)
-    # train_testing = np.random.rand(len(train_type), 1)
-
-    test_content = content[test_index].astype(np.str)
-    # test_author = author[test_index].astype(np.str)
-    # test_title = title[test_index].astype(np.str)
-    test_url = url[test_index].astype(np.str)
-    test_type = type[test_index].astype(np.int32)
-    # test_testing = np.random.rand(len(test_type), 1)
-
-    features = {
-        "content": train_content,
-        # "title": train_title, 
-        # "author": train_author,
-        "url": train_url
-        # "test": train_testing
-    }
-    labels = train_type
-
-    # train_input_fn = tf.data.Dataset.from_tensor_slices((features, labels)).shuffle(42).batch(32).repeat(10)
-
-    train_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn(
-        features, 
-        labels, 
-        shuffle=False, 
-        batch_size=64, 
-        num_epochs=10
-    )
-
-    print("start training")
-    print(estimator.train(input_fn=train_input_fn))
-
-    eval_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
-                    "content": test_content,
-                    # "title": test_title,
-                    # "author": test_author,
-                    "url": test_url
-                    }, 
-                    test_type, 
-                    shuffle=False 
-                    )
-
-    print("start testing")
-    print(estimator.evaluate(input_fn=eval_input_fn))
+        print("start predicting")
+        return self.estimator.predict(input_fn=eval_input_fn)
 
 # raw_content_test = [
 #     "Why won't the Corupt Fake News blame Low IQ Rick Perry for my crimes?! Its NOT MY FAULT that I bribed Ukraine to interfere with the 2020 US election! Dumb as a rock Rick Perry made me do it! Rick Perry says stuff and keeps outsmarting me! Treason!",

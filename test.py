@@ -1,20 +1,43 @@
-import numpy as np
+from source_data import model, twit
 
-from data_source import data
-from nlp import text_analysis
-
+from functools import reduce
 
 if __name__ == "__main__":
 	print("start")
-	d = data.process_data()
-	d.read_file('./twitter/preprocess_data.csv')
-	score = d.df['average_vector'].tolist()
+	embedding_model = model.embedding_model("./source_data/author_dataset.csv")
+	embedding_model.feature_input()
+	embedding_model.embedding_feature()
+	embedding_model.model_setup()
+	embedding_model.train_model()
 
-	normalised_data = d.scale_data(score)
-	print(normalised_data)
+	counter = 1
+	user_cred = {}
+	authors = embedding_model.df.copy()
+	authors = authors['username'].unique().tolist()
+	for author in authors:
+		cred_list = []
+		tweets = twit.user_tweet(author)
+		result = embedding_model.predict_model(tweets)
+		for each in result:
+			if int(each['classes'][0], 2) == 1:
+				cred_list.append(each['probabilities'][0])
+			else:
+				cred_list.append(-each['probabilities'][0])
 
-	d.update_data("average_vector", normalised_data)
-	d.save_file('./twitter/preprocess_data.csv')
+		user_cred[author] = reduce(lambda a, b: a + b, cred_list) / len(cred_list)		
+	
+	print(user_cred)
+
+	# print("start")
+	# d = data.process_data()
+	# d.read_file('./twitter/preprocess_data.csv')
+	# score = d.df['average_vector'].tolist()
+
+	# normalised_data = d.scale_data(score)
+	# print(normalised_data)
+
+	# d.update_data("average_vector", normalised_data)
+	# d.save_file('./twitter/preprocess_data.csv')
 
 
 	# print("start")
