@@ -101,23 +101,53 @@ class dnn_model():
         self.text_embedding = hub.text_embedding_column(
             "content", 
             module_spec="https://tfhub.dev/google/nnlm-en-dim128-with-normalization/1",
+            # module_spec="https://tfhub.dev/google/Wiki-words-250-with-normalization/1",
             trainable=False
         )
 
-        self.user_cred_feature = tf.feature_columns.numeric_column("user_credibility")
-        self.user_verf_feature = tf.feature_columns.numeric_column("user_verified")
+        self.user_cred_feature = tf.feature_column.numeric_column("user_credibility")
+        self.user_verf_feature = tf.feature_column.numeric_column("user_verified")
 
     def model_setup(self):
-        self.binary_label_head = tf.contrib.estimator.binary_classification_head(
-            loss_reduction=tf.losses.Reduction.SUM_OVER_BATCH_SIZE
-        )
+        # self.binary_label_head = tf.contrib.estimator.binary_classification_head(
+        #     loss_reduction=tf.losses.Reduction.SUM_OVER_BATCH_SIZE
+        # )
 
-        self.estimator = tf.estimator.DNNEstimator(
-            head=self.binary_label_head,
+        # self.estimator = tf.estimator.DNNEstimator(
+        #     head=self.binary_label_head,
+        #     hidden_units=[128,64],
+        #     feature_columns=[self.text_embedding, self.user_cred_feature, self.user_verf_feature],
+        #     batch_norm=True,
+        #     model_dir="./estimator_dnn"
+        # )
+
+        self.estimator = tf.estimator.DNNClassifier(
+            n_classes=2,
             hidden_units=[128,64],
             feature_columns=[self.text_embedding, self.user_cred_feature, self.user_verf_feature],
             batch_norm=True,
-            model_dir="./estimator_training"
+            model_dir="./estimator_single"
+        )
+
+        # self.estimator = tf.estimator.DNNLinearCombinedClassifier(
+        #     dnn_feature_columns=[self.text_embedding, self.user_verf_feature, self.user_cred_feature],
+        #     dnn_hidden_units=[128,64],
+        #     batch_norm=True,
+        #     model_dir='./estimator_linear_classifier'
+        # )
+
+        # self.estimator = tf.estimator.LinearClassifier(
+        #     feature_columns=[self.text_embedding, self.user_cred_feature, self.user_verf_feature],
+        #     optimizer='Adagrad',
+        #     model_dir='./estimator_linear'
+        # )
+
+    def restore_saved_model(self):
+        print("start restoring model")
+        self.estimator = tf.estimator.DNNClassifier(
+            hidden_units=[128,64],
+            feature_columns=[self.text_embedding, self.user_cred_feature, self.user_verf_feature],
+            warm_start_from="./estimator_dnn"
         )
 
     def train_model(self):
@@ -162,13 +192,13 @@ class dnn_model():
                         )
 
         print("start predicting")
-        return self.estimator.evaluate(input_fn=eval_input_fn)
+        print(self.estimator.evaluate(input_fn=eval_input_fn))
 
-    def predict_model(self, content:str, verified:float, credibility:float):
+    def predict_model(self, content:list, verified:list, credibility:list):
         eval_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
-                        "content": content,
-                        "user_credibility": credibility,
-                        "user_verified": verified
+                        "content": np.array(content),
+                        "user_credibility": np.array(credibility),
+                        "user_verified": np.array(verified)
                         },  
                         shuffle=False 
                         )
