@@ -2,8 +2,34 @@
 
 from source_data import model, twit
 import matplotlib.pyplot as plt
+import numpy as np
 
 from functools import reduce
+
+def demo(username:str, content:str):
+	print("start")
+	verified = twit.user_verified(username)
+	embedding_model = model.embedding_model("./source_data/author_dataset.csv")
+	embedding_model.embedding_feature()
+	embedding_model.restore_saved_model()
+
+	cred_list = []
+	tweets = twit.user_tweet('BreakingNews')
+	if tweets is not None:
+		result = embedding_model.predict_model(tweets)
+		for each in result:
+			cred_list.append(each['probabilities'][0])
+		else:
+			cred_list.append(-each['probabilities'][0])
+
+	cred_score = reduce(lambda a, b: a + b, cred_list) / len(cred_list)	
+	
+	dnn_model = model.dnn_model("./source_data/complete_dataset.csv")
+	dnn_model.embedding_feature()
+	dnn_model.restore_saved_model()
+	result = dnn_model.predict_model([content], [verified], [cred_score])
+	for each in result:
+		print(each)
 
 def get_user_credibility_score():
 	print("start")
@@ -47,7 +73,7 @@ def get_user_credibility_score():
 
 
 if __name__ == "__main__":
-	# get_user_credibility_score()
+	get_user_credibility_score()
 	# print("start")
 	# embedding_model = model.embedding_model("./source_data/complete_dataset.csv")
 	# embedding_model.feature_input()
@@ -61,13 +87,6 @@ if __name__ == "__main__":
 	# dnn_model.model_setup()
 	# dnn_model.train_model()
 	# dnn_model.test_model()
-
-	dnn_model = model.dnn_model("./source_data/complete_dataset.csv")
-	dnn_model.embedding_feature()
-	dnn_model.restore_saved_model()
-	result = dnn_model.predict_model(['hello, today is the day people are going to die'], [1], [0.21])
-	for each in result:
-		print(each)
 
 	# user_cred = []
 	# username = ['ChannelNewsAsia', 'STcom', 'benni1028', 'realDonaldTrump', 'axanner']

@@ -31,6 +31,17 @@ def verified_score():
 
     df_keep.to_csv('./author_dataset.csv', index=False)
 
+def user_verified(username:str):
+    c = twint.Config()
+    c.Username = username
+    c.Pandas = True
+    twint.run.Lookup(c)
+
+    tweets_df = twint.output.panda.User_df
+    result = tweets_df.verified.values
+    result = int(result[0])
+    return result
+
 def user_tweet(username:str):
     try:
         c = twint.Config()

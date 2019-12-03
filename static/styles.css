@@ -1,0 +1,17 @@
+.title {
+    padding: 30px 0 0 0;
+}
+
+.input_box {
+    width: 100%;
+    border-color: grey;
+}
+
+.label_title {
+    padding: 10px 0 0 0;
+    margin: 0 0 0 0;
+}
+
+.result {
+    padding: 40px 0 0 0;
+}

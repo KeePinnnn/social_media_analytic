@@ -35,22 +35,22 @@ class embedding_model():
             hidden_units=[128,64],
             feature_columns=[self.text_embedding],
             batch_norm=True,
-            model_dir="./estimator_training"
+            model_dir="./estimator_cred_score"
         )
 
     def train_model(self):
         for train_index, test_index in self.kfold.split(self.type):
 
-            train_content = self.content[train_index].astype(np.str)
-            train_type = self.type[train_index].astype(np.int32)
+            self.train_content = self.content[train_index].astype(np.str)
+            self.train_type = self.type[train_index].astype(np.int32)
 
-            test_content = self.content[test_index].astype(np.str)
-            test_type = self.type[test_index].astype(np.int32)
+            self.test_content = self.content[test_index].astype(np.str)
+            self.test_type = self.type[test_index].astype(np.int32)
 
             features = {
-                "content": train_content,
+                "content": self.train_content,
             }
-            labels = train_type
+            labels = self.train_type
 
             train_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn(
                 features, 
@@ -63,11 +63,19 @@ class embedding_model():
             print("start training")
             self.estimator.train(input_fn=train_input_fn)
 
-    def test_model(self, train_content:object, test_content:object):
+    def restore_saved_model(self):
+        print("start restoring model")
+        self.estimator = tf.estimator.DNNClassifier(
+            hidden_units=[128,64],
+            feature_columns=[self.text_embedding],
+            warm_start_from="./estimator_cred_score"
+        )
+
+    def test_model(self):
         eval_input_fn = tf.compat.v1.estimator.inputs.numpy_input_fn({
-                        "content": train_content,
+                        "content": self.test_content,
                         },  
-                        test_content,
+                        self.test_type,
                         shuffle=False 
                         )
 
@@ -126,7 +134,7 @@ class dnn_model():
             hidden_units=[128,64],
             feature_columns=[self.text_embedding, self.user_cred_feature, self.user_verf_feature],
             batch_norm=True,
-            model_dir="./estimator_single"
+            model_dir="./estimator_new"
         )
 
         # self.estimator = tf.estimator.DNNLinearCombinedClassifier(
