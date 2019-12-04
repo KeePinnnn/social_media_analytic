@@ -8,6 +8,7 @@ from functools import reduce
 
 def demo(username:str, content:str):
 	print("start")
+	print(username)
 	verified = twit.user_verified(username)
 	embedding_model = model.embedding_model("./source_data/author_dataset.csv")
 	embedding_model.embedding_feature()
@@ -30,7 +31,13 @@ def demo(username:str, content:str):
 	dnn_model.restore_saved_model()
 	result = dnn_model.predict_model([content], [verified], [cred_score])
 	for each in result:
-		print(each)
+		label = int(each['classes'][0], 2)
+		proabilities = each['probabilities'][0]
+
+	if label == 1:
+		return 0.5 + (proabilities*0.5)
+	else:
+		return proabilities*0.5
 
 def get_user_credibility_score():
 	print("start")

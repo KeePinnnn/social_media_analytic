@@ -10,6 +10,7 @@
     src="https://code.jquery.com/jquery-3.4.1.min.js"
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
     crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <title>Fake News Detector</title>
 </head>
 <body>
@@ -57,11 +58,25 @@
     </div>
 </body>
 <script>
+    const url = '/get_details'
+
    $('form').submit(function() {
         var username = $('#username').val();
         var content = $('#content').val();
-        console.log(username);
-        console.log(content);
+        $.ajax({
+            url:url,
+            type: 'GET',
+            data: {
+                'username': username,
+                'content': content
+            },
+            success: function(result) {
+                console.log(result);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        })
    });
 </script>
 </html>
