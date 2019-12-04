@@ -15,3 +15,8 @@
 .result {
     padding: 40px 0 0 0;
 }
+
+.submit_button {
+    float: right;
+    padding: 18px 0 0 0;
+}
