@@ -14,13 +14,14 @@ def demo(username:str, content:str):
 	embedding_model.restore_saved_model()
 
 	cred_list = []
-	tweets = twit.user_tweet('BreakingNews')
+	tweets = twit.user_tweet(username)
 	if tweets is not None:
 		result = embedding_model.predict_model(tweets)
 		for each in result:
-			cred_list.append(each['probabilities'][0])
-		else:
-			cred_list.append(-each['probabilities'][0])
+			if int(each['classes'][0], 2) == 1:
+				cred_list.append(each['probabilities'][0])
+			else:
+				cred_list.append(-each['probabilities'][0])
 
 	cred_score = reduce(lambda a, b: a + b, cred_list) / len(cred_list)	
 	
