@@ -21,7 +21,7 @@
                 <div class="row">
                     <h2 class="title">
                         <p>
-                            Welcome to this site!
+                            Fake News Detector
                         </p>
                     </h2>
                 </div>
@@ -45,13 +45,15 @@
                     <button type="submit" class="btn btn-primary" id="submit">Submit</button>
                 </div>
             </form>
-            <div class="row result">
+            <div class="row result" id="result_label" style="display: none;">
                 <h4 class="label_title">
                     <p>
                         Result
                     </p>
                 </h4>
-                
+            </div>
+            <div class="row" id="result_row" style="display: none;">
+                <label for="result" id="result"></label>        
             </div>
         </div>
         <div class="col-md-3"></div>
@@ -60,7 +62,8 @@
 <script>
     const url = '/get_details'
 
-   $('form').submit(function() {
+   $('form').submit(function(e) {
+        e.preventDefault();
         var username = $('#username').val();
         var content = $('#content').val();
         $.ajax({
@@ -71,10 +74,19 @@
                 'content': content
             },
             success: function(result) {
-                console.log(result);
+                console.log(result["result"]);
+                $('#result_row').show();
+                $('#result_label').show();
+                var score = Math.round(result['result']*100);
+                console.log(score);
+                if (score > 50) 
+                    $('#result').css('color', 'limegreen');
+                else
+                    $('#result').css('color', 'red');
+                $('#result').text(score + '%');
             },
             error: function(error) {
-                console.log(error);
+                alert(error);
             }
         })
    });

@@ -6,6 +6,8 @@ import numpy as np
 
 from functools import reduce
 
+import sys
+
 def demo(username:str, content:str):
 	print("start")
 	print(username)
@@ -35,9 +37,11 @@ def demo(username:str, content:str):
 		proabilities = each['probabilities'][0]
 
 	if label == 1:
-		return 0.5 + (proabilities*0.5)
+		file = open('result.txt', 'w+')
+		file.writelines([str(0.5 + (proabilities*0.5))])
 	else:
-		return proabilities*0.5
+		file = open('result.txt', 'w+')
+		file.writelines([str(proabilities*0.5)])
 
 def get_user_credibility_score():
 	print("start")
@@ -81,7 +85,8 @@ def get_user_credibility_score():
 
 
 if __name__ == "__main__":
-	get_user_credibility_score()
+	demo(sys.argv[1], sys.argv[2])
+	# get_user_credibility_score()
 	# print("start")
 	# embedding_model = model.embedding_model("./source_data/complete_dataset.csv")
 	# embedding_model.feature_input()

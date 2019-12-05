@@ -1,15 +1,29 @@
+body {
+    background-image: url('./selective-focus-photography-of-tree-leaves-754082.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
 .title {
     padding: 30px 0 0 0;
+    color: #228b22;
+
 }
 
 .input_box {
     width: 100%;
-    border-color: grey;
+    border-color: transparent;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.5); 
+    color: white;
+    outline: none;
 }
 
 .label_title {
     padding: 10px 0 0 0;
     margin: 0 0 0 0;
+    color: #00ace6;
 }
 
 .result {
